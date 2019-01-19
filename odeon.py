@@ -32,47 +32,56 @@ def getJsonFromServer(url, token):
 def printJson(url, token):
     print(json.dumps(getJson(url, token), indent=4))
     
-def printLocation(locations, index):
-    location = locations[index]
+def printLocation(location):
     print "Location Name: %s" % location["siteName"]
     print "Submitted by: %s" % location["userName"]
     print "Production: %s" % location["production"]["title"]
     print "Approved: %s" % location["approved"]
-    
-def printProduction(productions, index):
-    production = productions[index]
+
+def deleteLocation(location):
+    headers = {'authorization': token}
+    url = "%s/%s" % (URL_LOCATIONS, location['id'])
+    response = requests.delete(url, headers=headers)
+    return response
+
+def approveLocation(location):
+    #TODO implement
+    return
+
+def printProduction(production):
     print "Title: %s" % production["title"]
     print "Type: %s" % production["type"]
     print "Released: %s" % production["releaseYear"]
     print "Plot: %s" % production["plot"]
-    
+
+def printComment(comment):
+    print "Author: %s" % comment['userName']
+    print "\"%s\"" % comment['text']
+    print "Approved: %s" % comment['approved']
+
+def printImage(images, index):
+    #TODO Print an individual image reference
+    return
+
 def writeDataToFile(path, url, token):
     locationsFile = open(path, 'w+')
     locationsFile.write(json.dumps(getJsonFromServer(url, token), indent = 4))
     locationsFile.close()
+    
+def saveDatabase(token):
+    print "Writing location data locally..."
+    writeDataToFile(PATH_LOCATIONS, URL_LOCATIONS, token)
+    print "Done\nWriting production data locally..."
+    writeDataToFile(PATH_PRODUCTIONS, URL_PRODUCTIONS, token)
+    print "Done\nWriting comment data locally..."
+    writeDataToFile(PATH_COMMENTS, URL_COMMENTS, token)
+    print "Done\nWriting image data locally..."
+    writeDataToFile(PATH_IMAGES, URL_IMAGES, token)
+    print "Done"
 
 #Check for error codes
 #{u'status': 404, u'timestamp': u'2019-01-19T05:46:41.788+0000', u'message': u'No message available', u'path': u'/rest/film_productions', u'error': u'Not Found'}
-
-"""
-def test():
-    token = getToken()
-    getJson(URL_LOCATIONS, pyperclip.paste())
-    getJson(URL_PRODUCTIONS, pyperclip.paste())
-    getJson(URL_COMMENTS, pyperclip.paste())
-    getJson(URL_IMAGES, pyperclip.paste())
-    printJson(URL_USERS, pyperclip.paste())
-"""  
     
 token = getToken()
 pyperclip.copy(token) # Saves the token to the clipboard.
 printToken(token)
-print "Writing location data locally..."
-writeDataToFile(PATH_LOCATIONS, URL_LOCATIONS, token)
-print "Done\nWriting production data locally..."
-writeDataToFile(PATH_PRODUCTIONS, URL_PRODUCTIONS, token)
-print "Done\nWriting comment data locally..."
-writeDataToFile(PATH_COMMENTS, URL_COMMENTS, token)
-print "Done\nWriting image data locally..."
-writeDataToFile(PATH_IMAGES, URL_IMAGES, token)
-print "Done"
