@@ -9,6 +9,11 @@ URL_PRODUCTIONS = "https://jscpeterson.com/rest/productions"
 URL_COMMENTS = "https://jscpeterson.com/rest/user_comments"
 URL_IMAGES = "https://jscpeterson.com/rest/images"
 
+PATH_LOCATIONS = "data/locations.json"
+PATH_PRODUCTIONS = "data/productions.json"
+PATH_COMMENTS = "data/comments.json"
+PATH_IMAGES = "data/images.json"
+
 token = ""
 
 def getToken():
@@ -18,7 +23,7 @@ def getToken():
 def printToken(token):
     print "\n***YOUR TOKEN IS***\n" + token
 
-def getJson(url, token):
+def getJsonFromServer(url, token):
     headers = {'authorization': token}
     response = requests.get(url, headers=headers)
     result = json.loads(response.text)
@@ -40,6 +45,11 @@ def printProduction(productions, index):
     print "Type: %s" % production["type"]
     print "Released: %s" % production["releaseYear"]
     print "Plot: %s" % production["plot"]
+    
+def writeDataToFile(path, url, token):
+    locationsFile = open(path, 'w+')
+    locationsFile.write(json.dumps(getJsonFromServer(url, token), indent = 4))
+    locationsFile.close()
 
 #Check for error codes
 #{u'status': 404, u'timestamp': u'2019-01-19T05:46:41.788+0000', u'message': u'No message available', u'path': u'/rest/film_productions', u'error': u'Not Found'}
@@ -57,5 +67,12 @@ def test():
 token = getToken()
 pyperclip.copy(token) # Saves the token to the clipboard.
 printToken(token)
-
-print 'Done'
+print "Writing location data locally..."
+writeDataToFile(PATH_LOCATIONS, URL_LOCATIONS, token)
+print "Done\nWriting production data locally..."
+writeDataToFile(PATH_PRODUCTIONS, URL_PRODUCTIONS, token)
+print "Done\nWriting comment data locally..."
+writeDataToFile(PATH_COMMENTS, URL_COMMENTS, token)
+print "Done\nWriting image data locally..."
+writeDataToFile(PATH_IMAGES, URL_IMAGES, token)
+print "Done"
