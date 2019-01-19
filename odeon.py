@@ -5,7 +5,7 @@ import pyperclip
 
 URL_USERS = "https://jscpeterson.com/rest/users"
 URL_LOCATIONS = "https://jscpeterson.com/rest/film_locations"
-URL_PRODUCTIONS = "https://jscpeterson.com/rest/film_productions"
+URL_PRODUCTIONS = "https://jscpeterson.com/rest/productions"
 URL_COMMENTS = "https://jscpeterson.com/rest/user_comments"
 URL_IMAGES = "https://jscpeterson.com/rest/images"
 
@@ -26,6 +26,23 @@ def getJson(url, token):
 
 def printJson(url, token):
     print(json.dumps(getJson(url, token), indent=4))
+    
+def printLocation(locations, index):
+    location = locations[index]
+    print "Location Name: %s" % location["siteName"]
+    print "Submitted by: %s" % location["userName"]
+    print "Production: %s" % location["production"]["title"]
+    print "Approved: %s" % location["approved"]
+    
+def printProduction(productions, index):
+    production = productions[index]
+    print "Title: %s" % production["title"]
+    print "Type: %s" % production["type"]
+    print "Released: %s" % production["releaseYear"]
+    print "Plot: %s" % production["plot"]
+
+#Check for error codes
+#{u'status': 404, u'timestamp': u'2019-01-19T05:46:41.788+0000', u'message': u'No message available', u'path': u'/rest/film_productions', u'error': u'Not Found'}
 
 """
 def test():
