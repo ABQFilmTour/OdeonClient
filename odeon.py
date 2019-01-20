@@ -38,15 +38,17 @@ def printLocation(location):
     print "Production: %s" % location["production"]["title"]
     print "Approved: %s" % location["approved"]
 
-def deleteLocation(location):
+def deleteLocation(location, token):
     headers = {'authorization': token}
     url = "%s/%s" % (URL_LOCATIONS, location['id'])
     response = requests.delete(url, headers=headers)
     return response
 
-def approveLocation(location):
-    #TODO implement
-    return
+def approveLocation(location, token):
+    headers = {'authorization': token}
+    location['approved'] = True
+    response = requests.patch(URL_LOCATIONS, headers=headers, json=location)
+    return response
 
 def printProduction(production):
     print "Title: %s" % production["title"]
@@ -78,6 +80,21 @@ def saveDatabase(token):
     print "Done\nWriting image data locally..."
     writeDataToFile(PATH_IMAGES, URL_IMAGES, token)
     print "Done"
+
+def getApprovalStats(submissionList):
+    approved = 0
+    unapproved = 0
+    for submission in submissionList:
+        if submission['approved']:
+            approved += 1
+        else:
+            unapproved += 1
+    returnMessage = "%i submissions have been approved. " % (approved)
+    if unapproved > 0:
+        returnMessage += "%i submissions are still awaiting approval." % (unapproved)
+    else:
+        returnMessage += "No new submissions await approval."
+    return returnMessage
 
 #Check for error codes
 #{u'status': 404, u'timestamp': u'2019-01-19T05:46:41.788+0000', u'message': u'No message available', u'path': u'/rest/film_productions', u'error': u'Not Found'}
