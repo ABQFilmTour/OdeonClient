@@ -16,6 +16,43 @@ PATH_IMAGES = "data/images.json"
 
 token = ""
 
+class FilmLocation:
+
+    locationId = ""
+    siteName = ""
+    userName = ""
+    productionTitle = ""
+    approved = False
+    latCoordinate = 0
+    longCoordinate = 0
+
+    def __init__(self, json):
+        self.locationId = json['id']
+        self.siteName = json['siteName']
+        self.userName = json['userName']
+        self.latCoordinate = json['latCoordinate']
+        self.longCoordinate = json['longCoordinate']
+        self.productionTitle = json['production']['title']
+        self.approved = json['approved']
+
+    def __str__(self):
+        return "\
+Site Name: %s \n\
+Coordinates: %f, %f \n\
+Submitted by: %s \n\
+Production: %s \n\
+Approved: %s "\
+% (self.siteName, self.latCoordinate, self.longCoordinate, self.userName, self.productionTitle, self.approved)
+    
+    def printLocation(location):
+        print "Location Name: %s" % location["siteName"]
+        print "Submitted by: %s" % location["userName"]
+        print "Production: %s" % location["production"]["title"]
+        print "Approved: %s" % location["approved"]    
+
+    def getId(self):
+        return self.locationId
+
 def getToken():
     token = "Bearer " + token_fetcher.fetch()
     return token
@@ -30,17 +67,11 @@ def getJsonFromServer(url, token):
     return result
 
 def printJson(url, token):
-    print(json.dumps(getJson(url, token), indent=4))
-    
-def printLocation(location):
-    print "Location Name: %s" % location["siteName"]
-    print "Submitted by: %s" % location["userName"]
-    print "Production: %s" % location["production"]["title"]
-    print "Approved: %s" % location["approved"]
+    print(json.dumps(getJson(url, token), indent=4))  
 
 def deleteLocation(location, token):
     headers = {'authorization': token}
-    url = "%s/%s" % (URL_LOCATIONS, location['id'])
+    url = "%s/%s" % (URL_LOCATIONS, location.getId())
     response = requests.delete(url, headers=headers)
     return response
 
