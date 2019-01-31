@@ -3,9 +3,9 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 def fetch():
     profile = "https://www.googleapis.com/auth/userinfo.profile"
     email = "https://www.googleapis.com/auth/userinfo.email"
-    openid = "https://www.googleapis.com/auth/plus.me"
+    openid = "https://www.googleapis.com/plus/v1/people/me"
     try:
-        flow = InstalledAppFlow.from_client_secrets_file("client_secret_web.json", scopes = [profile, email, openid])
+        flow = InstalledAppFlow.from_client_secrets_file("client_secret_web.json", scopes = [profile, email])
     except IOError:
         clientSecretNotFound()
         return    
