@@ -59,7 +59,7 @@ Approved: %s "\
     def getId(self):
         return self.locationId
         
-    def delete(token):
+    def delete(self, token):
         headers = {'authorization': token}
         url = "%s/%s" % (URL_LOCATIONS, self.json['id'])
         response = requests.delete(url, headers=headers)
@@ -72,12 +72,38 @@ Approved: %s "\
         return response
 
 class UserComment:
-    def __init__(self):
-        print "Not implemented"
+    def __init__(self, json):
+        self.json = json
+        
+    def __str__(self):
+        return "\
+Comment: %s \n\
+Submitted by: %s \n\
+Approved: %s "\
+% (self.json['text'], self.json['userName'], self.json['approved'])
+
+    """
+    def print(self):
+        print "Author: %s" % self.json['userName']
+        print "\"%s\"" % self.json['text']
+        print "Approved: %s" % self.json['approved']
+    """
+
+    def delete(self, token):
+        headers = {'authorization': token}
+        url = "%s/%s" % (URL_COMMENTS, self.json['id'])
+        response = requests.delete(url, headers=headers)
+        return response
+
+    def approve(self, token):
+        headers = {'authorization': token}
+        self.json['approved'] = True
+        response = requests.patch(URL_COMMENTS, headers=headers, json=self.json)
+        return response
 
 class UserImage:
     def __init__(self):
-        print "Not implemented"
+        self.json = json
 
 def getToken():
     token = "Bearer " + token_fetcher.fetch()
@@ -87,7 +113,7 @@ def printToken(token):
     print "\n***YOUR TOKEN IS***\n" + token
 
 """
-Retrieeves a list of the JSON data from a URL on the server.
+Retrieves a list of the JSON data from a URL on the server.
 """
 def getJsonFromServer(url, token):
     headers = {'authorization': token}
@@ -106,11 +132,6 @@ def printProduction(production):
     print "Type: %s" % production["type"]
     print "Released: %s" % production["releaseYear"]
     print "Plot: %s" % production["plot"]
-
-def printComment(comment):
-    print "Author: %s" % comment['userName']
-    print "\"%s\"" % comment['text']
-    print "Approved: %s" % comment['approved']
 
 def printImage(images, index):
     #TODO Print an individual image reference
@@ -153,6 +174,15 @@ def getApprovalStats(submissionList):
 token = getToken()
 pyperclip.copy(token) # Saves the token to the clipboard.
 printToken(token)
+
 locations = getJsonFromServer(URL_LOCATIONS, token)
-#comments = getJsonFromServer(URL_COMMENTS, token)
+lastLoc = FilmLocation(locations[0])
+print "\nLast Location:"
+print lastLoc
+
+comments = getJsonFromServer(URL_COMMENTS, token)
+lastCom = UserComment(comments[0])
+print "\nLast Comment:"
+print lastCom
+
 #images = getJsonFromServer(URL_IMAGES, token)
