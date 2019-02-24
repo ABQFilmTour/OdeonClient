@@ -16,6 +16,9 @@ PATH_IMAGES = "data/images.json"
 
 token = ""
 
+"""
+A film location, assumed to have an existing entry in the database.
+"""
 class FilmLocation:
 
     locationId = ""
@@ -27,6 +30,7 @@ class FilmLocation:
     longCoordinate = 0
 
     def __init__(self, json):
+        self.json = json
         self.locationId = json['id']
         self.siteName = json['siteName']
         self.userName = json['userName']
@@ -44,14 +48,36 @@ Production: %s \n\
 Approved: %s "\
 % (self.siteName, self.latCoordinate, self.longCoordinate, self.userName, self.productionTitle, self.approved)
     
-    def printLocation(location):
+    """
+    def print():
         print "Location Name: %s" % location["siteName"]
         print "Submitted by: %s" % location["userName"]
         print "Production: %s" % location["production"]["title"]
         print "Approved: %s" % location["approved"]    
+    """
 
     def getId(self):
         return self.locationId
+        
+    def delete(token):
+        headers = {'authorization': token}
+        url = "%s/%s" % (URL_LOCATIONS, self.json['id'])
+        response = requests.delete(url, headers=headers)
+        return response
+
+    def approve(self, token):
+        headers = {'authorization': token}
+        self.json['approved'] = True
+        response = requests.patch(URL_LOCATIONS, headers=headers, json=self.json)
+        return response
+
+class UserComment:
+    def __init__(self):
+        print "Not implemented"
+
+class UserImage:
+    def __init__(self):
+        print "Not implemented"
 
 def getToken():
     token = "Bearer " + token_fetcher.fetch()
@@ -60,26 +86,20 @@ def getToken():
 def printToken(token):
     print "\n***YOUR TOKEN IS***\n" + token
 
+"""
+Retrieeves a list of the JSON data from a URL on the server.
+"""
 def getJsonFromServer(url, token):
     headers = {'authorization': token}
     response = requests.get(url, headers=headers)
     result = json.loads(response.text)
-    return result
+    return result    
 
+"""
+Prints formatted JSON data from a URL
+"""
 def printJson(url, token):
     print(json.dumps(getJson(url, token), indent=4))  
-
-def deleteLocation(location, token):
-    headers = {'authorization': token}
-    url = "%s/%s" % (URL_LOCATIONS, location.getId())
-    response = requests.delete(url, headers=headers)
-    return response
-
-def approveLocation(location, token):
-    headers = {'authorization': token}
-    location['approved'] = True
-    response = requests.patch(URL_LOCATIONS, headers=headers, json=location)
-    return response
 
 def printProduction(production):
     print "Title: %s" % production["title"]
@@ -133,3 +153,6 @@ def getApprovalStats(submissionList):
 token = getToken()
 pyperclip.copy(token) # Saves the token to the clipboard.
 printToken(token)
+locations = getJsonFromServer(URL_LOCATIONS, token)
+#comments = getJsonFromServer(URL_COMMENTS, token)
+#images = getJsonFromServer(URL_IMAGES, token)
