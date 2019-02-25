@@ -102,8 +102,27 @@ Approved: %s "\
         return response
 
 class UserImage:
-    def __init__(self):
+    def __init__(self, json):
         self.json = json
+
+    def __str__(self):
+        return "\
+Image URL: %s\n\
+Submitted by: %s\n\
+Approved: %s"\
+% (self.json['url'], self.json['userName'], self.json['approved'])
+
+    def delete(self, token):
+        headers = {'authorization': token}
+        url = "%s/%s" % (URL_IMAGES, self.json['id'])
+        response = requests.delete(url, headers=headers)
+        return response
+
+    def approve(self, token):
+        headers = {'authorization': token}
+        self.json['approved'] = True
+        response = requests.patch(URL_IMAGES, headers=headers, json=self.json)
+        return response
 
 def getToken():
     token = "Bearer " + token_fetcher.fetch()
@@ -132,10 +151,6 @@ def printProduction(production):
     print "Type: %s" % production["type"]
     print "Released: %s" % production["releaseYear"]
     print "Plot: %s" % production["plot"]
-
-def printImage(images, index):
-    #TODO Print an individual image reference
-    return
 
 def writeDataToFile(path, url, token):
     locationsFile = open(path, 'w+')
@@ -185,4 +200,7 @@ lastCom = UserComment(comments[0])
 print "\nLast Comment:"
 print lastCom
 
-#images = getJsonFromServer(URL_IMAGES, token)
+images = getJsonFromServer(URL_IMAGES, token)
+lastImage = UserImage(images[0])
+print "\nLast Image:"
+print lastImage
