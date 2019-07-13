@@ -5,7 +5,7 @@ def fetch():
     email = "https://www.googleapis.com/auth/userinfo.email"
     openid = "https://www.googleapis.com/plus/v1/people/me"
     try:
-        flow = InstalledAppFlow.from_client_secrets_file("client_secret_web.json", scopes = [profile, email])
+        flow = InstalledAppFlow.from_client_secrets_file("client_secret_web.json", scopes = ["openid", email, profile])
     except IOError:
         clientSecretNotFound()
         return    
